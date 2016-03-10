@@ -1,6 +1,5 @@
 // shim for using process in browser
-
-var process = module.exports = {};
+// based off https://github.com/defunctzombie/node-process/blob/master/browser.js
 var queue = [];
 var draining = false;
 var currentQueue;
@@ -42,7 +41,7 @@ function drainQueue() {
     clearTimeout(timeout);
 }
 
-process.nextTick = function (fun) {
+export function nextTick(fun) {
     var args = new Array(arguments.length - 1);
     if (arguments.length > 1) {
         for (var i = 1; i < arguments.length; i++) {
@@ -53,7 +52,7 @@ process.nextTick = function (fun) {
     if (queue.length === 1 && !draining) {
         setTimeout(drainQueue, 0);
     }
-};
+}
 
 // v8 likes predictible objects
 function Item(fun, array) {
@@ -63,29 +62,77 @@ function Item(fun, array) {
 Item.prototype.run = function () {
     this.fun.apply(null, this.array);
 };
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-process.version = ''; // empty string to avoid regexp issues
-process.versions = {};
+export var title = 'browser';
+export var browser = true;
+export var env = {};
+export var argv = [];
+export var version = ''; // empty string to avoid regexp issues
+export var versions = {};
 
 function noop() {}
 
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
+export var on = noop;
+export var addListener = noop;
+export var once = noop;
+export var off = noop;
+export var removeListener = noop;
+export var removeAllListeners = noop;
+export var emit = noop;
 
-process.binding = function (name) {
+export function binding(name) {
     throw new Error('process.binding is not supported');
-};
+}
 
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
+export function cwd () { return '/' }
+export function chdir (dir) {
     throw new Error('process.chdir is not supported');
 };
-process.umask = function() { return 0; };
+export function umask() { return 0; }
+
+// from https://github.com/kumavis/browser-process-hrtime/blob/master/index.js
+var performance = global.performance || {}
+var performanceNow =
+  performance.now        ||
+  performance.mozNow     ||
+  performance.msNow      ||
+  performance.oNow       ||
+  performance.webkitNow  ||
+  function(){ return (new Date()).getTime() }
+
+// generate timestamp or delta
+// see http://nodejs.org/api/process.html#process_process_hrtime
+export function hrtime(previousTimestamp){
+  var clocktime = performanceNow.call(performance)*1e-3
+  var seconds = Math.floor(clocktime)
+  var nanoseconds = Math.floor((clocktime%1)*1e9)
+  if (previousTimestamp) {
+    seconds = seconds - previousTimestamp[0]
+    nanoseconds = nanoseconds - previousTimestamp[1]
+    if (nanoseconds<0) {
+      seconds--
+      nanoseconds += 1e9
+    }
+  }
+  return [seconds,nanoseconds]
+}
+export default {
+  nextTick: nextTick,
+  title: title,
+  browser: browser,
+  env: env,
+  argv: argv,
+  version: version,
+  versions: versions,
+  on: on,
+  addListener: addListener,
+  once: once,
+  off: off,
+  removeListener: removeListener,
+  removeAllListeners: removeAllListeners,
+  emit: emit,
+  binding: binding,
+  cwd: cwd,
+  chdir: chdir,
+  umask: umask,
+  hrtime: hrtime
+};
