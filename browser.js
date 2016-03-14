@@ -63,11 +63,14 @@ Item.prototype.run = function () {
     this.fun.apply(null, this.array);
 };
 export var title = 'browser';
+export var platform = 'browser';
 export var browser = true;
 export var env = {};
 export var argv = [];
 export var version = ''; // empty string to avoid regexp issues
 export var versions = {};
+export var release = {};
+export var config = {};
 
 function noop() {}
 
@@ -115,6 +118,14 @@ export function hrtime(previousTimestamp){
   }
   return [seconds,nanoseconds]
 }
+
+var startTime = new Date();
+export function uptime() {
+  var currentTime = new Date();
+  var dif = currentTime - startTime;
+  return dif / 1000;
+}
+
 export default {
   nextTick: nextTick,
   title: title,
@@ -134,5 +145,9 @@ export default {
   cwd: cwd,
   chdir: chdir,
   umask: umask,
-  hrtime: hrtime
+  hrtime: hrtime,
+  platform: platform,
+  release: release,
+  config: config,
+  uptime: uptime
 };
