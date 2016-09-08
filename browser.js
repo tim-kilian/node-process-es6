@@ -1,35 +1,21 @@
 // shim for using process in browser
 // based off https://github.com/defunctzombie/node-process/blob/master/browser.js
 
-var cachedSetTimeout;
-var cachedClearTimeout;
-
 function defaultSetTimout() {
     throw new Error('setTimeout has not been defined');
 }
 function defaultClearTimeout () {
     throw new Error('clearTimeout has not been defined');
 }
-(function () {
-    try {
-        if (typeof setTimeout === 'function') {
-            cachedSetTimeout = setTimeout;
-        } else {
-            cachedSetTimeout = defaultSetTimout;
-        }
-    } catch (e) {
-        cachedSetTimeout = defaultSetTimout;
-    }
-    try {
-        if (typeof clearTimeout === 'function') {
-            cachedClearTimeout = clearTimeout;
-        } else {
-            cachedClearTimeout = defaultClearTimeout;
-        }
-    } catch (e) {
-        cachedClearTimeout = defaultClearTimeout;
-    }
-} ())
+var cachedSetTimeout = defaultSetTimout;
+var cachedClearTimeout = defaultClearTimeout;
+if (typeof global.setTimeout === 'function') {
+    cachedSetTimeout = setTimeout;
+}
+if (typeof global.clearTimeout === 'function') {
+    cachedClearTimeout = clearTimeout;
+}
+
 function runTimeout(fun) {
     if (cachedSetTimeout === setTimeout) {
         //normal enviroments in sane situations
