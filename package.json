@@ -5,12 +5,12 @@
   "keywords": [
     "process"
   ],
-  "version": "0.11.5",
+  "version": "0.11.6",
   "repository": {
     "type": "git",
     "url": "git://github.com/calvinmetcalf/node-process-es6.git"
   },
   "license": "MIT",
   "main": "./browser.js",
-    "module": "./browser.js"
+  "module": "./browser.js"
 }
