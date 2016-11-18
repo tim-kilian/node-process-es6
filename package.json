@@ -11,5 +11,6 @@
     "url": "git://github.com/calvinmetcalf/node-process-es6.git"
   },
   "license": "MIT",
-  "main": "./browser.js"
+  "main": "./browser.js",
+    "module": "./browser.js"
 }
