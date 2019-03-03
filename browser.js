@@ -9,12 +9,14 @@ function defaultClearTimeout () {
 }
 var cachedSetTimeout = defaultSetTimout;
 var cachedClearTimeout = defaultClearTimeout;
-if (typeof global.setTimeout === 'function') {
-    cachedSetTimeout = setTimeout;
-}
-if (typeof global.clearTimeout === 'function') {
-    cachedClearTimeout = clearTimeout;
-}
+try {
+    if (typeof global.setTimeout === 'function') {
+        cachedSetTimeout = setTimeout;
+    }
+    if (typeof global.clearTimeout === 'function') {
+        cachedClearTimeout = clearTimeout;
+    }
+} catch (e) { }
 
 function runTimeout(fun) {
     if (cachedSetTimeout === setTimeout) {
@@ -162,7 +164,10 @@ export function chdir (dir) {
 export function umask() { return 0; }
 
 // from https://github.com/kumavis/browser-process-hrtime/blob/master/index.js
-var performance = global.performance || {}
+var performance = {};
+try {
+    performance = global.performance;
+} catch (e) { }
 var performanceNow =
   performance.now        ||
   performance.mozNow     ||
